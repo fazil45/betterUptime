@@ -12,10 +12,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id       String    @id @default(uuid())
+  email    String    @unique
+  password String
+  websites Website[]
+}
+
 model Website {
   id        String        @id @default(uuid())
   url       String
   timeAdded DateTime
+  user      User          @relation(fields: [user_id], references: [id])
+  user_id   String
   ticks     WebsiteTick[]
 }
 
@@ -26,13 +35,14 @@ model Region {
 }
 
 model WebsiteTick {
-  id                  String        @id @default(uuid())
-  response_time_ms    Int
-  status              WebsiteStatus
-  region              Region        @relation(fields: [region_id], references: [id])
-  website             Website       @relation(fields: [website_id], references: [id])
-  region_id           String
-  website_id          String
+  id               String        @id @default(uuid())
+  response_time_ms Int
+  status           WebsiteStatus
+  region           Region        @relation(fields: [region_id], references: [id])
+  website          Website       @relation(fields: [website_id], references: [id])
+  region_id        String
+  website_id       String
+  createdAt        DateTime      @default(now())
 }
 
 enum WebsiteStatus {
