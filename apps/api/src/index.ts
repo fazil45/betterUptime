@@ -1,12 +1,20 @@
 import "dotenv/config"
 import { prisma } from "@repo/db/client";
 import { CreateUserInput } from "@repo/zodSchema";
-import express, { type Request, type Response } from "express";
+import express, { CookieOptions, type Request, type Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const app = express();
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 3000
+
+const cookieOption: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, 
+  path: "/",
+}
 
 
 app.use(express.json());
@@ -83,9 +91,7 @@ app.post("/user/signin", async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
     );
 
-    res.status(201).cookie("token",token,{
-
-    }).json({
+    res.status(201).cookie("token",token,cookieOption).json({
       message: "Signin successfully ",
     });
 
@@ -95,30 +101,31 @@ app.post("/user/signin", async (req: Request, res: Response) => {
   }
 });
 
-// app.post("/website", async (req: Request, res: Response) => {
-//   try {
-//     if (!req.body.url) {
-//       return res.status(401).json({ error: "Url not found" });
-//     }
+app.post("/website", async (req: Request, res: Response) => {
+  try {
+    if (!req.body.url) {
+      return res.status(401).json({ error: "Url not found" });
+    }
 
-//     const website = await prisma.website.create({
-//       data: {
-//         url: req.body.url,
-//         timeAdded: new Date(),
-//       },
-//     });
+    const website = await prisma.website.create({
+      data: {
+        url: req.body.url,
+        timeAdded: new Date(),
+        user_id:"2"
+      },
+    });
 
-//     res.status(201).json({
-//       id: website.id,
-//     });
-//   } catch (error) {
-//     console.error("Prisma Error:", error);
+    res.status(201).json({
+      id: website.id,
+    });
+  } catch (error) {
+    console.error("Prisma Error:", error);
 
-//     res.status(500).json({
-//       message: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// });
+    res.status(500).json({
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
 
 app.get("/status/:websiteId", (req: Request, res: Response) => {});
 
