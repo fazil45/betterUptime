@@ -1,16 +1,4 @@
 import { type Request, Response, NextFunction } from "express";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id?: string;
-        [key: string]: any;
-      };
-    }
-  }
-}
-
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const authMiddleware = async (
@@ -34,9 +22,7 @@ export const authMiddleware = async (
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    req.user = {
-        id:decodedInformation.id
-    };
+    req.userId = decodedInformation.id
 
     next();
   } catch (error) {
