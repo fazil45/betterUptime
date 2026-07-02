@@ -1,0 +1,21 @@
+{
+  "name": "pusher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc -b && node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "redis": "^6.1.0",
+    "@repo/db": "workspace:*",
+    "@repo/redis": "workspace:*"
+  }
+}
